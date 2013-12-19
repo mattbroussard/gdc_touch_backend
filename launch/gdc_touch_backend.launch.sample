@@ -1,0 +1,31 @@
+<launch>
+
+  <!-- settings for MySQL database, SSL certificates, and port -->
+  <arg name="db_host" value="localhost" />
+  <arg name="db_name" value="gdc_touch" />
+  <arg name="db_user" value="root" />
+  <arg name="db_pass" value="" />
+  <arg name="db_table_prefix" value="" />
+  <arg name="ssl_keyfile" value="$(find gdc_touch_backend)/ssl/key.key" />
+  <arg name="ssl_certfile" value="$(find gdc_touch_backend)/ssl/cert.cert" />
+  <arg name="port" value="9090" />
+
+  <!-- from here down probably does not need to be modified -->
+
+  <param name="/rosbridge/port" value="$(arg port)"/>
+  <param name="/rosbridge/address" value=""/>
+  <node output="screen" respawn="true" name="rosbridge_websocket" pkg="rosbridge_server" type="rosbridge_websocket">
+    <param name="certfile" value="$(arg ssl_certfile)" />
+    <param name="keyfile" value="$(arg ssl_keyfile)" />
+    <param name="authenticate" value="false" />
+  </node>
+
+  <node output="screen" respawn="true" name="gdc_touch_backend" pkg="gdc_touch_backend" type="gdc_touch_backend.py">
+    <param name="db_host" value="$(arg db_host)" />
+	<param name="db_name" value="$(arg db_name)" />
+	<param name="db_user" value="$(arg db_user)" />
+	<param name="db_pass" value="$(arg db_pass)" />
+	<param name="db_table_prefix" value="$(arg db_table_prefix)" />
+  </node>
+
+</launch>

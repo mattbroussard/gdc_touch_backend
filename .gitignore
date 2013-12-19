@@ -1,0 +1,22 @@
+#excluded for security reasons
+*.key
+*.cert
+ssl/
+gdc_touch_backend.launch
+
+#compiled python
+*.pyc
+
+#files created by OS, etc.
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+.swp
+*.swp
+.swp/
+
