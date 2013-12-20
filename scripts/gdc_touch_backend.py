@@ -1,42 +1,37 @@
 #!/usr/bin/env python
 
 #general imports
-import sys, json
-
-#import ROS stuff
+import sys
 import rospy
-from std_msgs.msg import String
 
-#global variables
-pub = None
+#allow our other modules to
+# - run things after rospy is initialized
+initfuncs = []
+# - run things in the main loop
+loopfuncs = []
+# - run things to cleanup on shutdown
+donefuncs = []
 
-def subscriberCallback(msg):
-	try:
-		obj = json.loads(msg.data)
-
-		#TODO: handle received message
-
-	except e:
-		rospy.logerr("An error occurred in subscriberCallback: %s", e)
+#import other modules of ours
+import messaging
+import test_printer
 
 def main():
-	global pub
+	global initfuncs, loopfuncs, donefuncs
 
 	rospy.init_node("gdc_touch_backend")
 
-	#TODO: do init work such as opening MySQL connection, etc.
-
-	pub = rospy.Publisher("gdc_touch_server", String)
-	rospy.Subscriber("gdc_touch_client", String, subscriberCallback)
-	
-	rospy.loginfo("gdc_touch_backend now listening.")
+	for x in initfuncs:
+		x()
 
 	r = rospy.Rate(1)
 	while not rospy.is_shutdown():
-		
-		#TODO: check for messages that need to be resent; do other periodic work
-
+		for x in loopfuncs:
+			x()
 		r.sleep()
+
+	for x in donefuncs:
+		x()
 
 if __name__ == "__main__":
 	try:
