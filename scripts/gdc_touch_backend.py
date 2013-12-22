@@ -1,20 +1,24 @@
 #!/usr/bin/env python
 
+#an ordered list of our modules
+modules = ["messaging", "test_printer"]
+
 #general imports
 import sys
 import rospy
 
-#allow our other modules to
-# - run things after rospy is initialized
+#load our modules in a slightly magical way
 initfuncs = []
-# - run things in the main loop
 loopfuncs = []
-# - run things to cleanup on shutdown
 donefuncs = []
-
-#import other modules of ours
-import messaging
-import test_printer
+for i in modules:
+	x = __import__(i)
+	if hasattr(x, "_init"):
+		initfuncs.append(getattr(x, "_init"))
+	if hasattr(x, "_loop"):
+		loopfuncs.append(getattr(x, "_loop"))
+	if hasattr(x, "_done"):
+		donefuncs.append(getattr(x, "_done"))
 
 def main():
 	global initfuncs, loopfuncs, donefuncs
